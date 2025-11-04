@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Agentic AI TypeScript Demo
 
-## Getting Started
+Demo app showcasing Agentic AI with TypeScript and Next.js — a minimal, opinionated reference for building agent-driven UIs and workflows.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- TypeScript-first Next.js application
+- Example agent orchestration patterns (tasks, tools, memory)
+- Simple UI to demo agent decisions and step-by-step reasoning
+- Testable, extensible architecture for experimenting with LLM-driven agents
+
+## Tech stack
+
+- Next.js (React + server / API routes)
+- TypeScript
+- Node.js
+- Next build tools
+- Optional: OpenAI-compatible LLM provider
+
+## Prerequisites
+
+- Node.js 18+ and npm or yarn
+- (Optional) OpenAI API key or other LLM provider credentials
+
+## Quick start
+
+1. Clone the repo
+2. Install dependencies
+3. Set environment variables (see next section)
+4. Run local dev server
+5. Build and start production preview
+
+## Environment variables
+
+Create a `.env.local` file in project root with any required keys. Example:
+
+```
+GEMINI_API_KEY=
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Troubleshooting
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- "No API key" — ensure GEMINI_API_KEY (or provider key) is set.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Contributing
 
-## Learn More
+- Open issues for feature requests or bugs
+- Keep changes small and add tests for new behavior
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Enjoy exploring agentic patterns in TypeScript and Next.js.

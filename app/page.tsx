@@ -1,65 +1,111 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import {
+  Conversation,
+  ConversationContent,
+  ConversationScrollButton,
+} from "@/components/ai-elements/conversation";
+import { Message, MessageContent } from "@/components/ai-elements/message";
+import {
+  PromptInput,
+  type PromptInputMessage,
+  PromptInputSubmit,
+  PromptInputTextarea,
+} from "@/components/ai-elements/prompt-input";
+import { useState } from "react";
+import { Response } from "@/components/ai-elements/response";
+import type { ChatStatus } from "ai";
+
+const ChatBotDemo = () => {
+  const [input, setInput] = useState("");
+  const [status, setStatus] = useState<ChatStatus | undefined>(undefined);
+  type ChatMsg = { id: string; role: "user" | "assistant"; text: string };
+  const [messages, setMessages] = useState<ChatMsg[]>([]);
+
+  const handleSubmit = (message: PromptInputMessage) => {
+    const hasText = Boolean(message.text);
+    if (!hasText) {
+      return;
+    }
+    const userText = message.text!;
+
+    const userMsg = {
+      id: crypto.randomUUID(),
+      role: "user" as const,
+      text: userText,
+    };
+    setMessages((prev) => [...prev, userMsg]);
+
+    setStatus("submitted");
+    fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt: userText }),
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err?.error || `Request failed: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data: { response?: string }) => {
+        const text = data?.response ?? "";
+        const assistantMsg = {
+          id: crypto.randomUUID(),
+          role: "assistant" as const,
+          text,
+        };
+        setMessages((prev) => [...prev, assistantMsg]);
+      })
+      .catch((e) => {
+        const assistantMsg = {
+          id: crypto.randomUUID(),
+          role: "assistant" as const,
+          text: `Error: ${e.message}`,
+        };
+        setMessages((prev) => [...prev, assistantMsg]);
+        setStatus("error");
+      })
+      .finally(() => {
+        setStatus(undefined);
+      });
+    setInput("");
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <div className="max-w-4xl mx-auto sm:p-6 p-2 relative size-full h-screen">
+      <div className="flex flex-col h-full">
+        <Conversation className="h-full">
+          <ConversationContent>
+            {messages.map((m, i) => (
+              <div key={m.id}>
+                <Message from={m.role}>
+                  <MessageContent>
+                    <Response>{m.text}</Response>
+                  </MessageContent>
+                </Message>
+              </div>
+            ))}
+          </ConversationContent>
+          <ConversationScrollButton />
+        </Conversation>
+
+        <PromptInput onSubmit={handleSubmit} className="mt-4">
+          <PromptInputTextarea
+            className="grow flex outline-none resize-none border-0 focus:ring-0 focus-visible:ring-0 "
+            onChange={(e) => setInput(e.target.value)}
+            value={input}
+          />
+          <PromptInputSubmit
+            className="h-10 w-10 mx-2"
+            disabled={!input && !status}
+            status={status}
+          />
+        </PromptInput>
+      </div>
     </div>
   );
-}
+};
+
+export default ChatBotDemo;
