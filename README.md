@@ -35,7 +35,8 @@ Demo app showcasing Agentic AI with TypeScript and Next.js — a minimal, opinio
 Create a `.env.local` file in project root with any required keys. Example:
 
 ```
-GEMINI_API_KEY=
+GEMINI_API_KEY= api key from gemini
+MONGODB_URI= mongodbconnection string
 ```
 
 ## Troubleshooting
