@@ -1,0 +1,24 @@
+Adding Products to Your Ethify Store
+
+1. Methods to Add Products
+You can add products to your Ethify store either using the AI chatbot or through the dashboard. The AI will guide you step by step if you choose the chat option.
+
+2. Product Details
+When adding a product, you need to provide the following information:
+- Product name (maximum 200 characters)
+- Product description (maximum 400 characters)
+- Price
+- Images (maximum size: 10MB each)
+- Type or category
+- Variants (e.g., size, color)
+- Inventory quantity
+
+3. Categories and Organization
+Products can be assigned to categories or collections. You can add a single product to multiple categories. Properly categorizing your products helps customers navigate your store more easily and improves the shopping experience. The AI can suggest categories based on product type or description.
+
+4. Tips and Best Practices
+- Use clear and descriptive product names.  
+- Keep descriptions concise and informative.  
+- Use high-quality images within the size limit.  
+- Add variants to help customers choose the right option.  
+- Organize products logically within categories and collections for easier navigation.  

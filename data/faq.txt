@@ -1,0 +1,36 @@
+Frequently Asked Questions about Ethify
+
+1. How do I create a store?
+To create a store, first sign up or log in to your Ethify account. You can use your email and verify it, or sign in with a provider like Google. Once logged in, use the AI chatbot to create your store by describing what you want. The AI may ask you for a subdomain, images for landing pages, the number of pages, product categories, payment integration details, and theme preferences. The AI guides you step by step to complete the setup.
+
+2. How do I add products?
+Products can be added using the AI chatbot or directly through the dashboard. You need to provide the product name (max 200 characters), description (max 400 characters), price, images (max 10MB each), type or category, variants like size and color, and inventory quantity. Products can be assigned to multiple categories or collections. Proper categorization and high-quality images improve customer experience.
+
+3. Can a product belong to multiple categories?
+Yes. A single product can be assigned to multiple categories or collections to make it easier for customers to find and navigate.
+
+4. Can I customize my theme?
+While you can use the dashboard, it is **recommended to use the AI chatbot** for theme customization. Each page is made of pre-built blocks which can be combined and customized. You can adjust colors, fonts, layouts, and content for each block. The AI ensures your store maintains a consistent and professional appearance across all pages.
+
+5. How many pages can I create?
+You can create as many pages as your plan allows. Each page can be named according to its purpose, such as Home, About, Contact, or Product pages. The AI helps generate content and structure for each page.
+
+6. What payment methods are supported?
+Ethify supports local Ethiopian payment systems such as Telebirr, CBE, Dashen, and Abisiniya, as well as other major payment providers. To set up a payment method, you provide your account name and number. You can configure payments either via the AI chatbot, which guides you step by step, or through the dashboard.
+
+7. How do I set up shipping?
+Stores can list available shipping locations with their corresponding prices manually, or use integrated shipping providers for automatic calculations. The AI helps configure shipping rules and ensures customers are charged correctly.
+
+8. How do I preview my store?
+You can preview your store at any time to see how it looks on desktop and mobile. The AI can guide you through checking layouts, block arrangements, images, and overall design before publishing.
+
+9. What are the best practices for images and themes?
+- Use high-quality but small-size images to optimize load times.  
+- Maintain a consistent theme across all pages.  
+- Choose a short and memorable subdomain.  
+- Use the AI chatbot for guidance in customization and layout to ensure professional appearance.
+
+10. Tips for beginners
+- Plan your pages and categories ahead of time.  
+- Use the AI to streamline setup, product addition, and customization.  
+- Regularly preview your store to make adjustments before publishing.

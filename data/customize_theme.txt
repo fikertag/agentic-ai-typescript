@@ -1,0 +1,22 @@
+Customizing Your Ethify Store Theme
+
+1. Customization Methods
+While you can customize your store using the dashboard, it is **recommended to use the AI chatbot** for customization. The AI guides you step by step, ensuring consistency and applying styles correctly across your store.
+
+2. Pre-Built Blocks
+Each page in your store is composed of pre-built blocks. These blocks can be combined to create pages such as Home, About, Contact, and Product pages. You can add, remove, or rearrange blocks, and the AI will know how to adjust the blocks according to your instructions.
+
+3. Customization Options
+You can customize multiple aspects of each block and the overall store theme, including:
+- Colors and fonts
+- Layout and positioning of blocks
+- Content within each block (text, images, buttons, etc.)
+- Main theme combination (primary, secondary, and additional style elements)
+
+4. Recommendations
+Currently, there are no limitations on customization. Using the AI ensures your store maintains a professional and consistent appearance. The dashboard can be used for minor adjustments if needed.
+
+5. Tips and Best Practices
+- Always use the AI to apply block customizations and theme changes.  
+- Maintain a consistent theme across all pages for a cohesive look.  
+- Preview your store before publishing to ensure the layout looks good on both desktop and mobile.  

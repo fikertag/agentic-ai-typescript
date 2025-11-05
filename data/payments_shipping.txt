@@ -1,0 +1,19 @@
+Payment and Shipping Setup on Ethify
+
+1. Payment Methods
+Ethify supports multiple payment options to help your store accept payments smoothly. Local Ethiopian payment systems such as Telebirr, CBE, Dashen, and Abisiniya are supported, along with other major payment providers.  
+
+2. Payment Setup
+To configure a payment method, you simply provide your account name and account number. You can set up these payments either using the AI chatbot, which guides you step by step, or through the dashboard. The AI ensures your payment methods are properly connected and ready to process transactions.
+
+3. Shipping Setup
+For shipping, you have two options:
+- **Manual setup:** List available shipping locations and assign shipping prices to each location.
+- **Shipping providers:** Use integrated shipping providers to calculate shipping costs automatically based on region and package details.
+
+The AI can guide you in configuring shipping rules and locations to ensure customers are charged correctly.
+
+4. Tips and Best Practices
+- Double-check payment account details before saving.  
+- Set clear shipping prices or integrate reliable shipping providers for accuracy.  
+- Use the AI to streamline setup and ensure proper configuration of both payments and shipping.

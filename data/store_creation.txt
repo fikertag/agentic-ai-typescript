@@ -1,0 +1,22 @@
+Creating a Store on Ethify
+
+1. Account Setup
+To create a store, first sign up or log in to your Ethify account. You can sign up using your email and verify it, or use a third-party provider such as Google. Make sure your account is verified to access all features.
+
+2. Starting Your Store
+After logging in, you can use the AI chatbot to create your store. Simply describe what you want, and the AI will guide you step by step. The chatbot may ask you to provide a subdomain name for your store, images for landing pages and other pages, the number of pages you want, product categories, payment integration details, and theme preferences.
+
+3. Templates and Design
+Ethify stores are built from pre-designed blocks. Each page is a collection of these blocks, which can be customized. You can specify to the AI what changes to make, such as adjusting colors, fonts, layouts, or block content. Your store will have a main theme composed of primary and secondary elements, which defines the overall style and design. The AI will help you apply these styles consistently across your pages.
+
+4. Pages and Content
+You can create as many pages as your plan allows, and you can name each page as you wish (e.g., Home, About, Contact). The AI can also help generate content for these pages. Each page can contain multiple sections or categories, depending on the purpose of the page. The AI will ensure that your content fits well with the chosen theme and layout.
+
+5. Payment and Integrations
+Ethify supports local Ethiopian payment systems like Telebirr and CBE. The AI will guide you through connecting these payment gateways and ensuring your store is ready to process transactions. You can also set up other integrations such as analytics, shipping options, and marketing tools as needed.
+
+6. Tips and Best Practices
+- Choose a short and memorable subdomain for your store.  
+- Use high-quality images but keep file sizes small to optimize page load times.  
+- Plan your pages and categories ahead to keep your store organized.  
+- Follow the AI’s guidance when customizing blocks and themes to maintain a professional appearance.  
