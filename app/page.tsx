@@ -87,11 +87,9 @@ const ChatBotDemo = () => {
     setInput("");
   };
 
-  if (!threadId) return <div>Loading chat...</div>;
-
   return (
     <div className="max-w-4xl mx-auto sm:p-6 p-2 relative size-full h-screen">
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full bb">
         <Conversation className="h-full">
           <ConversationContent>
             {messages.map((m, i) => (
