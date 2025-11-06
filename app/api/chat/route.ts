@@ -3,6 +3,8 @@ import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { embedTextGemini } from "@/lib/embed";
 import RagChunks from "@/model/ragChunks";
 import dbConnect from "@/lib/mongoose";
+import { buildPromptFromConfig } from "@/lib/promptBuilder";
+import { rga_ethify_cfg } from "@/lib/promots";
 
 const model = new ChatGoogleGenerativeAI({
   model: "gemini-2.5-flash",
@@ -49,25 +51,29 @@ export async function POST(req: NextRequest) {
 
     const contextBlocks = (similarChunks || []).map(
       (c: { docName: string; chunkText: string; score?: number }, i: number) =>
-        `Source ${i + 1} (${c.docName}):\n${c.chunkText}`
+        `Source ${i + 1} (score=${(c.score ?? 0).toFixed(3)} | ${
+          c.docName
+        }):\n${c.chunkText}`
     );
+    const dynamicContextSuffix = contextBlocks.length
+      ? `\n\nRetrieved Sources:\n${contextBlocks.join("\n\n")}`
+      : `\n\n<No matching sources retrieved>`;
 
-    const contextText = contextBlocks.join("\n\n");
+    const dynamicConfig = {
+      ...rga_ethify_cfg,
+      context: `${rga_ethify_cfg.context}${dynamicContextSuffix}`,
+    };
 
-    const finalPrompt = `You are a helpful assistant. Use ONLY the provided context to answer the user's question. If the answer is not in the context, say you don't know.
-
-    Context:
-    ${contextText || "<no context available>"}
-
-    User question:
-    ${prompt}
-
-    Answer`;
+    const finalPrompt = buildPromptFromConfig(
+      dynamicConfig,
+      `USER QUESTION:\n${prompt}`
+    );
 
     const response = await model.invoke(finalPrompt);
 
     return NextResponse.json({
       response: response.text,
+      prompt: finalPrompt,
       usedChunks:
         similarChunks?.map((c: any, i: number) => ({
           i,
