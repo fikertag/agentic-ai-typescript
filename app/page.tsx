@@ -12,7 +12,7 @@ import {
   PromptInputSubmit,
   PromptInputTextarea,
 } from "@/components/ai-elements/prompt-input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Response } from "@/components/ai-elements/response";
 import type { ChatStatus } from "ai";
 
@@ -21,10 +21,20 @@ const ChatBotDemo = () => {
   const [status, setStatus] = useState<ChatStatus | undefined>(undefined);
   type ChatMsg = { id: string; role: "user" | "assistant"; text: string };
   const [messages, setMessages] = useState<ChatMsg[]>([]);
+  const [threadId, setThreadId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let id = localStorage.getItem("chat_thread_id");
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem("chat_thread_id", id);
+    }
+    setThreadId(id);
+  }, []);
 
   const handleSubmit = (message: PromptInputMessage) => {
     const hasText = Boolean(message.text);
-    if (!hasText) {
+    if (!hasText || !threadId) {
       return;
     }
     const userText = message.text!;
@@ -40,7 +50,7 @@ const ChatBotDemo = () => {
     fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: userText }),
+      body: JSON.stringify({ prompt: userText, thread_id: threadId }),
     })
       .then(async (res) => {
         if (!res.ok) {
@@ -49,7 +59,11 @@ const ChatBotDemo = () => {
         }
         return res.json();
       })
-      .then((data: { response?: string }) => {
+      .then((data: { response?: string; thread_id?: string }) => {
+        if (data.thread_id && data.thread_id !== threadId) {
+          localStorage.setItem("chat_thread_id", data.thread_id);
+          setThreadId(data.thread_id);
+        }
         const text = data?.response ?? "";
         const assistantMsg = {
           id: crypto.randomUUID(),
@@ -72,6 +86,8 @@ const ChatBotDemo = () => {
       });
     setInput("");
   };
+
+  if (!threadId) return <div>Loading chat...</div>;
 
   return (
     <div className="max-w-4xl mx-auto sm:p-6 p-2 relative size-full h-screen">
