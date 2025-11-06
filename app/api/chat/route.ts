@@ -5,17 +5,7 @@ import RagChunks from "@/model/ragChunks";
 import dbConnect from "@/lib/mongoose";
 import { buildPromptFromConfig } from "@/lib/promptBuilder";
 import { rga_ethify_cfg } from "@/lib/promots";
-
-import mongoose from "mongoose";
-
-const ChatMemorySchema = new mongoose.Schema({
-  thread_id: { type: String, required: true, unique: true },
-  full_history: [{ role: { type: String }, content: { type: String } }],
-  summary_history: { type: String, default: "" },
-  updated_at: { type: Date, default: Date.now },
-});
-const ChatMemory =
-  mongoose.models.ChatMemory || mongoose.model("ChatMemory", ChatMemorySchema);
+import ChatMemory from "@/model/chatMemory";
 
 const model = new ChatGoogleGenerativeAI({
   model: "gemini-2.5-flash",
@@ -50,6 +40,14 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+    if (!process.env.GEMINI_API_KEY) {
+      return NextResponse.json({
+        response:
+          "I'm having trouble accessing the AI service. Please try again later.",
+        usedChunks: [],
+        thread_id,
+      });
+    }
 
     let chatDoc = await ChatMemory.findOne({ thread_id });
     let currentFull = chatDoc?.full_history || [];
@@ -66,29 +64,67 @@ export async function POST(req: NextRequest) {
       .map((m) => `${m.role}: ${m.content}`)
       .join("\n\n");
 
-    const queryEmbedding = await embedTextGemini({
-      contents: [prompt],
-    });
-    const vector = queryEmbedding[0].values;
-    const similarChunks = await RagChunks.aggregate([
-      {
-        $vectorSearch: {
-          queryVector: vector || [],
-          index: "rga_index",
-          path: "embedding",
-          numCandidates: 50,
-          limit: 5,
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          docName: 1,
-          chunkText: 1,
-          score: { $meta: "vectorSearchScore" },
-        },
-      },
-    ]);
+    const withRetry = async <T>(
+      fn: () => Promise<T>,
+      attempts = 2,
+      delayMs = 500
+    ): Promise<T> => {
+      let lastErr: any;
+      for (let i = 0; i < attempts; i++) {
+        try {
+          return await fn();
+        } catch (e) {
+          lastErr = e;
+          if (i < attempts - 1)
+            await new Promise((r) => setTimeout(r, delayMs));
+        }
+      }
+      throw lastErr;
+    };
+
+    let vector: number[] | null = null;
+    try {
+      const queryEmbedding = await withRetry(() =>
+        embedTextGemini({ contents: [prompt] })
+      );
+      vector = queryEmbedding?.[0]?.values || null;
+    } catch (e) {
+      console.warn(
+        "Embedding failed; proceeding without retrieval:",
+        (e as Error).message
+      );
+    }
+
+    let similarChunks: any[] = [];
+    if (vector) {
+      try {
+        similarChunks = await RagChunks.aggregate([
+          {
+            $vectorSearch: {
+              queryVector: vector,
+              index: "rga_index",
+              path: "embedding",
+              numCandidates: 50,
+              limit: 5,
+            },
+          },
+          {
+            $project: {
+              _id: 0,
+              docName: 1,
+              chunkText: 1,
+              score: { $meta: "vectorSearchScore" },
+            },
+          },
+        ]);
+      } catch (e) {
+        console.warn(
+          "Vector search failed; continuing without chunks:",
+          (e as Error).message
+        );
+        similarChunks = [];
+      }
+    }
     const contextBlocks = (similarChunks || []).map(
       (c: { docName: string; chunkText: string; score?: number }, i: number) =>
         `Source ${i + 1} (score=${(c.score ?? 0).toFixed(3)} | ${
@@ -108,8 +144,27 @@ export async function POST(req: NextRequest) {
       `Chat History:\n${formattedHistory}\n\nUSER QUESTION:\n${prompt}`
     );
 
-    const response = await model.invoke(finalPrompt);
-    const aiResponse = response.text;
+    let aiResponse = "";
+    try {
+      const llmResponse: any = await withRetry(
+        () => model.invoke(finalPrompt),
+        2,
+        700
+      );
+      aiResponse =
+        typeof llmResponse?.text === "string" ? llmResponse.text : "";
+      if (!aiResponse && Array.isArray(llmResponse?.content)) {
+        aiResponse = llmResponse.content
+          .map((p: any) => (typeof p === "string" ? p : p?.text || ""))
+          .join("\n")
+          .trim();
+      }
+      if (!aiResponse) aiResponse = "No response generated.";
+    } catch (e) {
+      console.warn("Model invocation failed:", (e as Error).message);
+      aiResponse =
+        "I'm temporarily unable to answer. Please retry your question soon.";
+    }
 
     const finalFull = [
       ...updatedFull,
@@ -143,20 +198,19 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       response: aiResponse,
-      prompt: finalPrompt,
-      usedChunks:
-        similarChunks?.map((c: any, i: number) => ({
-          i,
-          docName: c.docName,
-          score: c.score,
-        })) ?? [],
+      usedChunks: (similarChunks || []).map((c: any, i: number) => ({
+        i,
+        docName: c.docName,
+        score: c.score,
+      })),
       thread_id,
     });
   } catch (error) {
-    console.error("Error generating content:", error);
-    return NextResponse.json(
-      { error: (error as Error).message ?? "Internal Server Error" },
-      { status: 500 }
-    );
+    console.error("Unhandled chat route error:", error);
+    return NextResponse.json({
+      response: "A server error occurred. Please try again shortly.",
+      usedChunks: [],
+      thread_id: undefined,
+    });
   }
 }
