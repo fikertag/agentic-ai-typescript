@@ -1,51 +1,115 @@
-# Agentic AI TypeScript Demo
+## Agentic AI TypeScript Demo
 
-Demo app showcasing Agentic AI with TypeScript and Next.js — a minimal, opinionated reference for building agent-driven UIs and workflows.
+A minimal Next.js + TypeScript demo for building agentic AI workflows. It shows how to orchestrate LLMs with retrieval (RAG), memory, and modular prompts for e‑commerce tasks such as store management queries.
 
-## Features
+### Live Demo
 
-- TypeScript-first Next.js application
-- Example agent orchestration patterns (tasks, tools, memory)
-- Simple UI to demo agent decisions and step-by-step reasoning
-- Testable, extensible architecture for experimenting with LLM-driven agents
+Try the deployed version:
 
-## Tech stack
+https://assistant.fikiryilkal.me/
 
-- Next.js (React + server / API routes)
-- TypeScript
-- Node.js
-- Next build tools
-- Optional: OpenAI-compatible LLM provider
+Notes:
 
-## Prerequisites
+- May occasionally hit API usage/rate limits.
+- Runs on a modest server; brief slowdowns/timeouts are possible.
 
-- Node.js 18+ and npm or yarn
-- (Optional) OpenAI API key or other LLM provider credentials
+### Description
 
-## Quick start
+This repo implements a chat assistant tailored for Ethify (an e‑commerce platform). It retrieves documentation snippets via vector search (MongoDB $vectorSearch), builds a context‑aware prompt (with a prompt builder + configuration), generates responses using Google Gemini, and persists multi‑turn conversation history in MongoDB. It’s meant for quickly prototyping agent‑driven UIs where AI maintains context across turns.
 
-1. Clone the repo
-2. Install dependencies
-3. Set environment variables (see next section)
-4. Run local dev server
-5. Build and start production preview
+Key goal: let developers experiment with agent patterns (RAG, memory, prompt composition) without a lot of boilerplate.
 
-## Environment variables
+### Features
 
-Create a `.env.local` file in project root with any required keys. Example:
+- RAG pipeline: embed queries, run MongoDB vector search, inject top chunks into prompts.
+- Multi‑turn memory: keep the last 10 messages verbatim; summarize older history for efficiency.
+- Prompt builder: structured, reusable prompt config in `lib/promptBuilder.ts` + `lib/promots.ts`.
+- Agent‑ready: modular pieces you can extend with tools/actions.
+- Frontend: React chat UI with auto‑scroll, copy action, and clean error fallbacks.
+
+### Tech Stack
+
+- Frontend/Backend: Next.js 16 (App Router, TypeScript)
+- AI/ML: Google Gemini (chat via LangChain; embeddings via `@google/genai`)
+- Database: MongoDB (Atlas) with vector search; Mongoose models
+- Utils: Zod, `use-stick-to-bottom`
+
+### Prerequisites
+
+- Node.js 18+
+- MongoDB instance (local or Atlas) with a vector index (e.g., name: `rga_index`)
+- Gemini API key (GEMINI_API_KEY)
+
+### Installation
+
+Clone the repo:
+
+```bash
+git clone https://github.com/fikertag/agentic-ai-typescript.git
+cd agentic-ai-typescript
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create `.env.local` in project root:
+
+```bash
+GEMINI_API_KEY=your_gemini_api_key
+MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/ethify_db?retryWrites=true&w=majority
+```
+
+### Seed the DB (RAG)
+
+This project includes an API route to chunk and embed local docs.
+
+1. Put your plain‑text docs in the `data/` folder (read by `lib/loadDocuments.ts`).
+2. Run the dev server:
+
+```bash
+npm run dev
+```
+
+3. In a browser, hit:
 
 ```
-GEMINI_API_KEY= api key from gemini
-MONGODB_URI= mongodbconnection string
+http://localhost:3000/api/loadandembed
 ```
 
-## Troubleshooting
+It will chunk, embed with Gemini, and insert vectors into MongoDB (`RagChunks` collection).
 
-- "No API key" — ensure GEMINI_API_KEY (or provider key) is set.
+### Usage
 
-## Contributing
+Local development:
 
-- Open issues for feature requests or bugs
-- Keep changes small and add tests for new behavior
+```bash
+npm run dev
+```
 
-Enjoy exploring agentic patterns in TypeScript and Next.js.
+Then open http://localhost:3000 and chat (e.g., “How do I add products?”). Multi‑turn behavior is supported: follow up with clarifying questions; the API summarizes older turns and keeps recent ones.
+
+Production build:
+
+```bash
+npm run build
+npm start
+```
+
+### Reproducibility (AI‑specific)
+
+- Gemini outputs are probabilistic; to reduce variance, lower temperature in the model config (currently 0.7).
+- Use consistent model versions and the same documents in `data/` when re‑embedding.
+- Re‑embed any doc changes via the `/api/loadandembed` route.
+
+### Ethics & Safety
+
+The assistant enforces scope and safety guidelines from `lib/promots.ts` (e.g., refuse off‑topic or unsafe requests). Review and adapt these to your needs.
+
+### Example
+
+Input: “Customize store theme?”
+
+Output: concise steps grounded in retrieved docs, optionally with cited source snippets.
