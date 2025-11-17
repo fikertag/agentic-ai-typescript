@@ -4,6 +4,7 @@ import dbConnect from "@/lib/mongoose";
 import RagChunks from "@/model/ragChunks";
 import { embedTextGemini } from "@/lib/embed";
 import { NextResponse } from "next/server";
+import config from "@/ragConfig.json";
 
 export async function GET() {
   try {
@@ -16,8 +17,8 @@ export async function GET() {
     // Step 1: Chunk all documents
     for (const doc of docs) {
       const chunks = await chunkText(doc.text, {
-        chunkSize: 500,
-        chunkOverlap: 50,
+        chunkSize: config.chunkSize,
+        chunkOverlap: config.chunkOverlap,
       });
 
       chunks.forEach((chunk, index) => {

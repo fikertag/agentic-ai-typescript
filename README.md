@@ -81,6 +81,17 @@ http://localhost:3000/api/loadandembed
 
 It will chunk, embed with Gemini, and insert vectors into MongoDB (`RagChunks` collection).
 
+### RAG Pipeline Configuration
+
+The project uses the following configuration for the RAG pipeline:
+
+- `chunkSize` (in `ragConfig.json`): 500 tokens per chunk
+- `chunkOverlap` (in `ragConfig.json`): 50 tokens overlapping between chunks
+- `embeddingModel` (hardcoded in `loadAndEmbed` API route): embedTextGemini
+
+These settings control how documents are chunked and embedded for retrieval.
+Users can adjust `chunkSize` and `chunkOverlap` in `ragConfig.json` to fine-tune performance.
+
 ### Usage
 
 Local development:
